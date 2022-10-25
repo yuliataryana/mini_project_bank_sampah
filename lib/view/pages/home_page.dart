@@ -7,6 +7,7 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: hexToColor('#F0F6DC'),
       appBar: AppBar(
         elevation: 0,
         leading: const Icon(Icons.group),
@@ -125,31 +126,34 @@ class HomePage extends StatelessWidget {
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(8),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: [
-                                            Image.asset(
-                                              "assets/${e["image"]}",
-                                              width: 36,
-                                            ),
-                                            const Spacer(),
-                                            Text(
-                                              e["title"].toString(),
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .caption
-                                                  ?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                    color: Colors.black,
-                                                  ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            const Spacer(),
-                                          ],
-                                        ),
+                                          child: Column(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: [
+                                              Image.asset(
+                                                "assets/${e["image"]}",
+                                                width: 36,
+                                              ),
+                                              const Spacer(),
+                                              Flexible(
+                                                child: Text(
+                                                  e["title"].toString(),
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .caption
+                                                      ?.copyWith(
+                                                        fontWeight: FontWeight.bold,
+                                                        color: Colors.black,
+                                                      ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                              const Spacer(),
+                                            ],
+                                          ),
+                                        
                                       ),
                                     ),
                                   ),
