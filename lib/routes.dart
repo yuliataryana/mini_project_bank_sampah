@@ -18,7 +18,7 @@ class Routes {
         return MaterialPageRoute(builder: (context) => const SplashScreen());
       case '/price_list':
         return MaterialPageRoute(
-            builder: (context) => const HargaSampahScreen());
+            builder: (context) =>  HargaSampahScreen());
       case '/trash_bank':
         return MaterialPageRoute(
             builder: (context) => const TabunganSampahScreen());

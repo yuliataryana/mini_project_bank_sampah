@@ -2,7 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:mini_project_bank_sampah/common/utils.dart';
 
 class HargaSampahScreen extends StatelessWidget {
-  const HargaSampahScreen({super.key});
+   HargaSampahScreen({super.key});
+  // ignore: non_constant_identifier_names
+  final List<Map<String, dynamic>> ListHarga = [
+    {
+      "Nama" : "Botol Plastik",
+      "Harga" : 3000,
+    },
+    {
+      "Nama" : "Botol Kaca",
+      "Harga" : 2000,
+    },
+    {
+      "Nama" : "Botol Kaleng",
+      "Harga" : 3000,
+    },
+    {
+      "Nama" : "Galon",
+      "Harga" : 5000,
+    },
+    {
+      "Nama" : "Kardus",
+      "Harga" : 4000,
+    },
+    {
+      "Nama" : "Kertas",
+      "Harga" : 3000,
+    },
+    {
+      "Nama" : "Buku Bekas",
+      "Harga" : 3000,
+    },
+    {
+      "Nama" : "Elektronik",
+      "Harga" : 8000,
+    },
+    {
+      "Nama" : "Tutup Botol",
+      "Harga" : 3000
+    },
+    {
+      "Nama" : "Plastik",
+      "Harga" : 2000,
+    },
+    {
+      "Nama" : "Besi",
+      "Harga" : 10000,
+    },
+    {
+      "Nama" : "Perabot Bekas",
+      "Harga" : 4000,
+    },
+  ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +87,17 @@ class HargaSampahScreen extends StatelessWidget {
           ),
           Expanded(
             child: ListView.builder(
-              itemCount: 10,
+              itemCount: ListHarga.length,
               itemBuilder: (context, index) {
+                final list = ListHarga[index];
                 return Card(
                   color: hexToColor('#F0F6DC'),
                   child: ListTile(
                     title: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Text('Sampah'),
-                        Text('Rp. 1000/kg'),
+                      children: [
+                        Text('${list["Nama"]}'),
+                        Text('Rp ${list["Harga"]} /kg'),
                       ],
                     ),
                   ),

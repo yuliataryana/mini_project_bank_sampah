@@ -134,9 +134,9 @@ class HomePage extends StatelessWidget {
                                             children: [
                                               Image.asset(
                                                 "assets/${e["image"]}",
-                                                width: 36,
+                                                width: 30,
                                               ),
-                                              const Spacer(),
+                                              // const Spacer(),
                                               Flexible(
                                                 child: Text(
                                                   e["title"].toString(),
@@ -150,7 +150,7 @@ class HomePage extends StatelessWidget {
                                                   textAlign: TextAlign.center,
                                                 ),
                                               ),
-                                              const Spacer(),
+                                              // const Spacer(),
                                             ],
                                           ),
                                         
