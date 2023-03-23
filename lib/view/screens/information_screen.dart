@@ -16,20 +16,20 @@ class _InformationScreenState extends State<InformationScreen> {
   }
 
   final faqs = [
-    {
-      "title": "Bagaimana jika lupa kata sandi ?",
-      "body":
-          """
-      Untuk reset kata sandi, terdapat pada saat masuk aplikasi.
-        1.Klik Lupa Password
-        2.Isi alamat email anda
-        3.Klik Reset Password
-        4.Email akan dikirimkan kepada anda, cek email secara berkala
-        5.Klik link untuk mengubah kata sandi
-        6.Masukkan kata sandi baru
-        7.Akun dapat digunakan kembali.
-      """,
-    },
+    // {
+    //   "title": "Bagaimana jika lupa kata sandi ?",
+    //   "body":
+    //       """
+    //   Untuk reset kata sandi, terdapat pada saat masuk aplikasi.
+    //     1.Klik Lupa Password
+    //     2.Isi alamat email anda
+    //     3.Klik Reset Password
+    //     4.Email akan dikirimkan kepada anda, cek email secara berkala
+    //     5.Klik link untuk mengubah kata sandi
+    //     6.Masukkan kata sandi baru
+    //     7.Akun dapat digunakan kembali.
+    //   """,
+    // },
     {
       "title": "Tidak bisa tarik saldo, apa yang harus saya lakukan?",
       "body":

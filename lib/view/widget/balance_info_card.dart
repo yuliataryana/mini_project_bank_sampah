@@ -50,7 +50,7 @@ class BalanceInfoCard extends StatelessWidget {
                       ?.copyWith(fontWeight: FontWeight.bold),
                 ),
                 Text(
-                  "BSS-0001011-PJ05",
+                  "BSS-PJ05",
                   style: Theme.of(context)
                       .textTheme
                       .titleMedium

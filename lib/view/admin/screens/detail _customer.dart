@@ -132,7 +132,7 @@ class DetailCustomer extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    "Saldo",
+                    "Riwayat Transaksi",
                     style: TextStyle(fontSize: 16),
                   ),
                 ),

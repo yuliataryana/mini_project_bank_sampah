@@ -16,7 +16,7 @@ class HomePage extends StatelessWidget {
         leading: const Icon(Icons.group),
         title: Builder(builder: (context) {
           final profile = context.watch<AuthViewmodel>().userProfile;
-          if (profile?.role == "admin") return const Text("Petugas");
+          if (profile?.role == "admin") return const Text("Admin");
           return const Text("Nasabah");
         }),
         centerTitle: false,
@@ -189,8 +189,9 @@ class HomePage extends StatelessWidget {
                         onTap: () async {
                           // url launcer launch url
                           try {
-                            final res = await launchUrl(
-                                Uri.dataFromString(article.link));
+                            final res = await launchUrl (
+                                Uri.parse(article.link),
+                                mode: LaunchMode.externalApplication);
                             debugPrint("$res ${article.link}");
                           } catch (e) {
                             debugPrint(e.toString());
