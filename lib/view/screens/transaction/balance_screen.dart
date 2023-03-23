@@ -46,7 +46,7 @@ class BalanceScreen extends StatelessWidget {
           Row(
             children: [
               Text(
-                "Riwayat Transaksi",
+                "  Riwayat Transaksi",
                 style: Theme.of(context)
                     .textTheme
                     .titleLarge
