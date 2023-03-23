@@ -10,7 +10,7 @@ class OverlayManager {
 
   void showOverlay(BuildContext context, Widget widget) {
     _overlayEntry = OverlayEntry(builder: (context) => widget);
-    Overlay.of(context).insert(_overlayEntry!);
+    Overlay.of(context)?.insert(_overlayEntry!);
   }
 
   void hideOverlay() {
