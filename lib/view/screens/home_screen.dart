@@ -16,7 +16,7 @@ class _HomeScreenState extends State<HomeScreen>
   late final TabController _tabController;
   @override
   void initState() {
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _tabController.addListener(() {
       setState(() {});
     });
@@ -41,7 +41,7 @@ class _HomeScreenState extends State<HomeScreen>
         children: const [
           HomePage(),
           HistoryPage(),
-          NotificationPage(),
+          // NotificationPage(),
           ProfilePage(),
         ],
       ),
@@ -61,10 +61,10 @@ class _HomeScreenState extends State<HomeScreen>
             icon: Icon(Icons.history_edu_outlined),
             label: "History",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: "Notification",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(Icons.notifications),
+          //   label: "Notification",
+          // ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: "Profile",

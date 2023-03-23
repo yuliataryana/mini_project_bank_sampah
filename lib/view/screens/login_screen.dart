@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mini_project_bank_sampah/common/overlay_manager.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/utils.dart';
@@ -135,10 +136,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: TextButton(
                         onPressed: () async {
                           try {
+                            OverlayManager().showOverlay(
+                              context,
+                              const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
                             await context.read<AuthViewmodel>().login(
                                   username: _usernameController.text.trim(),
                                   password: _passwordController.text.trim(),
                                 );
+                            OverlayManager().hideOverlay();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
@@ -150,6 +158,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 .popUntil((route) => route.isFirst);
                             Navigator.of(context).pushReplacementNamed('/');
                           } on Exception catch (e) {
+                            OverlayManager().hideOverlay();
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(

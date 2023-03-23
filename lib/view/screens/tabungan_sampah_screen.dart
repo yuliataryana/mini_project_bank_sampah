@@ -1,43 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mini_project_bank_sampah/view/widget/add_item_dialog.dart';
+import 'package:mini_project_bank_sampah/viewmodel/main_viewmodel.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/utils.dart';
 
-class TabunganSampahScreen extends StatefulWidget {
+class TabunganSampahScreen extends StatelessWidget {
   const TabunganSampahScreen({super.key});
-
-  @override
-  State<TabunganSampahScreen> createState() => _TabunganSampahScreenState();
-}
-
-class _TabunganSampahScreenState extends State<TabunganSampahScreen> {
-  int itemCLicked = 0;
-  final items = const [
-    {
-      "image": "assets/botol_plastik.png",
-      "title": "Botol plastik",
-    },
-    {
-      "image": "assets/botol_kaca.png",
-      "title": "Botol Kaca",
-    },
-    {
-      "image": "assets/kaleng.png",
-      "title": "Botol Kaleng",
-    },
-    {
-      "image": "assets/galon.png",
-      "title": "Galon",
-    },
-    {
-      "image": "assets/kardus.png",
-      "title": "Kardus",
-    },
-    {
-      "image": "assets/elektronik.png",
-      "title": "Elektronik",
-    },
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +16,7 @@ class _TabunganSampahScreenState extends State<TabunganSampahScreen> {
     return Scaffold(
       backgroundColor: hexToColor('#F0F6DC'),
       appBar: AppBar(
-        title: const Text('Tabung Sampah'),
+        title: const Text('Harga Sampah'),
       ),
       body: Column(
         children: <Widget>[
@@ -70,58 +40,89 @@ class _TabunganSampahScreenState extends State<TabunganSampahScreen> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-              ),
-              itemCount: items.length,
-              itemBuilder: (context, index) {
-                final item = items[index];
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: InkWell(
-                    onTap: () {
-                      itemCLicked++;
-                      setState(() {});
-                    },
-                    child: Card(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.all(8),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(child: Image.asset('${item['image']}')),
-                            Text('${item["title"]}'),
-                          ],
+            child: Builder(builder: (context) {
+              final items = context.watch<MainViewmodel>().itemsType;
+              return GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                ),
+                itemCount: items.length,
+                itemBuilder: (context, index) {
+                  final item = items[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: InkWell(
+                      onTap: () async {
+                        // add otem to cart with dialog
+                        final qty =
+                            double.tryParse((await showGeneralDialog<String>(
+                                  context: context,
+                                  pageBuilder: (_, anim, anim2) {
+                                    return ScaleTransition(
+                                      scale: anim,
+                                      child: AddItemDialog(
+                                        child: Image.network(
+                                          item.imageUrl,
+                                          width: 200,
+                                          // height: 100,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                )) ??
+                                "");
+                        if (qty != null || (qty ?? 0) > 0) {
+                          context
+                              .read<MainViewmodel>()
+                              .addItemToCart(item, qty);
+                        }
+                      },
+                      child: Card(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16.0),
+                        ),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: Image.network(item.imageUrl)),
+                              Text(item.wasteName),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
-            ),
+                  );
+                },
+              );
+            }),
           ),
         ],
       ),
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(16),
         child: TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, "/cart");
+          },
           style: TextButton.styleFrom(
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
             ),
             backgroundColor: hexToColor("#7A9D30"),
           ),
-          child: Text(
-            "Keranjang ($itemCLicked)",
-            textAlign: TextAlign.center,
-            style:
-                GoogleFonts.livvic(color: hexToColor("#F0F6DC"), fontSize: 18),
-          ),
+          child: Builder(builder: (context) {
+            final cart = context.watch<MainViewmodel>().carts;
+            return Text(
+              "Keranjang (${cart.length})",
+              textAlign: TextAlign.center,
+              style: GoogleFonts.livvic(
+                color: hexToColor("#F0F6DC"),
+                fontSize: 18,
+              ),
+            );
+          }),
         ),
       ),
     );

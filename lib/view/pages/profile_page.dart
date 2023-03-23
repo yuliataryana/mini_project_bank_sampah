@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mini_project_bank_sampah/common/overlay_manager.dart';
 import 'package:mini_project_bank_sampah/common/utils.dart';
+import 'package:mini_project_bank_sampah/viewmodel/main_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../viewmodel/auth_viewmodel.dart';
 
@@ -10,9 +14,11 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final loggedAccount = context.watch<AuthViewmodel>().loggedAccount;
+    // final loggedAccount = context.watch<AuthViewmodel>().loggedAccount;
 
     // create scaffold page with appbar, body with avatar image and listtile of profile information
+    final profile = context.watch<AuthViewmodel>().userProfile;
+    final authDetail = Supabase.instance.client.auth.currentUser;
     return Scaffold(
       backgroundColor: hexToColor('#F0F6DC'),
       appBar: AppBar(
@@ -30,27 +36,84 @@ class ProfilePage extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Column(children: [
-                        Expanded(
-                          child: Container(
-                            color: Theme.of(context).primaryColor,
+                      child: Column(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              color: Theme.of(context).primaryColor,
+                            ),
                           ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            color: hexToColor('#F0F6DC'),
+                          Expanded(
+                            child: Container(
+                              color: hexToColor('#F0F6DC'),
+                            ),
                           ),
-                        ),
-                      ]),
+                        ],
+                      ),
                     ),
-                    const Align(
+                    Align(
                       alignment: Alignment.center,
                       child: Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: CircleAvatar(
-                          radius: 75,
-                          backgroundImage: AssetImage(
-                            'assets/profil.png',
+                        padding: const EdgeInsets.all(8.0),
+                        child: SizedBox(
+                          width: 150,
+                          height: 150,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                child: Builder(builder: (context) {
+                                  if (profile?.photoProfile != null) {
+                                    return CircleAvatar(
+                                      radius: 75,
+                                      backgroundImage: NetworkImage(
+                                        profile!.photoProfile!,
+                                      ),
+                                    );
+                                  }
+                                  return CircleAvatar(
+                                    radius: 75,
+                                    // backgroundImage: AssetImage(
+                                    //   'assets/profil.png',
+                                    // ),
+                                  );
+                                }),
+                              ),
+                              Align(
+                                alignment: Alignment.bottomRight,
+                                child: IconButton(
+                                  iconSize: 32,
+                                  // color: Colors.grey,
+                                  icon:
+                                      const Icon(Icons.change_circle_outlined),
+                                  onPressed: () async {
+                                    // using image pciker to change profile picture
+                                    final pickedFile = await ImagePicker()
+                                        .pickImage(source: ImageSource.gallery);
+                                    if (pickedFile != null) {
+                                      // show overlay loading
+                                      try {
+                                        OverlayManager().showOverlay(
+                                          context,
+                                          const Center(
+                                            child: CircularProgressIndicator(),
+                                          ),
+                                        );
+                                        await context
+                                            .read<AuthViewmodel>()
+                                            .updateProfilePicture(
+                                              pickedFile.path,
+                                            );
+                                        // hide overlay loading
+                                        OverlayManager().hideOverlay();
+                                      } catch (e) {
+                                        print(e);
+                                        OverlayManager().hideOverlay();
+                                      }
+                                    }
+                                  },
+                                ),
+                              )
+                            ],
                           ),
                         ),
                       ),
@@ -65,7 +128,11 @@ class ProfilePage extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/profile/edit');
+                      Navigator.pushNamed(
+                        context,
+                        '/profile/edit',
+                        arguments: profile!,
+                      );
                     },
                     style: TextButton.styleFrom(
                       shape: RoundedRectangleBorder(
@@ -93,19 +160,19 @@ class ProfilePage extends StatelessWidget {
               ),
               ListTile(
                 title: const Text('Nama'),
-                trailing: Text(loggedAccount?.name ?? "-"),
+                trailing: Text(profile?.username ?? "-"),
               ),
               ListTile(
                 title: const Text('Email'),
-                trailing: Text(loggedAccount?.email ?? "-"),
+                trailing: Text(authDetail?.email ?? "-"),
               ),
               ListTile(
                 title: const Text('No. HP'),
-                trailing: Text(loggedAccount?.phone ?? "-"),
+                trailing: Text(profile?.phone ?? "-"),
               ),
               ListTile(
                 title: const Text('Alamat'),
-                trailing: Text(loggedAccount?.address ?? "-"),
+                trailing: Text(profile?.address ?? "-"),
               ),
               const SizedBox(
                 height: 24,
@@ -121,6 +188,7 @@ class ProfilePage extends StatelessWidget {
                       onPressed: () {
                         try {
                           context.read<AuthViewmodel>().logout();
+                          context.read<MainViewmodel>().clearCart();
                           Navigator.pushNamed(context, '/login');
                         } catch (e) {
                           debugPrint(e.toString());

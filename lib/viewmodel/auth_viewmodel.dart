@@ -1,85 +1,99 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mini_project_bank_sampah/model/account.dart';
+import 'package:mini_project_bank_sampah/model/user_profile.dart';
+import 'package:mini_project_bank_sampah/service/auth_service.dart';
+import 'package:supabase/supabase.dart';
 
 class AuthViewmodel extends ChangeNotifier {
   AuthViewmodel._internal();
   static final _singleton = AuthViewmodel._internal();
   factory AuthViewmodel() => _singleton;
 
-  Account? _loggedAccount;
-  Account? _accountForm;
+  final AuthService _authService = AuthService();
 
-  Account? get loggedAccount => _loggedAccount;
-  Account? get accountForm => _accountForm;
+  UserProfile? _userProfile;
+  UserProfile? get userProfile => _userProfile;
 
-  void setLoggedAccount(Account? account) {
-    _loggedAccount = account;
+  void logout() async {
+    await _authService.logout();
+    _userProfile = null;
     notifyListeners();
   }
 
-  void setAccountForm(Account? account) {
-    _accountForm = account;
+  void loadUserProfile(String userid) async {
+    _userProfile = await _authService.getProfile(userid);
     notifyListeners();
   }
 
-  Future<void> saveProfile() async {
-    if (_loggedAccount == null) throw Exception("No logged account");
-    await Hive.box<Account>('account').put(_loggedAccount!.uid, accountForm!);
-    setLoggedAccount(accountForm);
-    notifyListeners();
-  }
-
-  void logout() {
-    _loggedAccount = null;
-    notifyListeners();
-  }
-
-  bool get isLogged => _loggedAccount != null;
-
-  bool get isNotLogged => !isLogged;
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
 
   Future<void> login(
       {required String username, required String password}) async {
-    final box = Hive.box<Account>('account');
-    final account = box.values.where(
-      (element) =>
-          (element.email == username || element.name == username) &&
-          element.password == password,
-    );
-
-    if (account.isNotEmpty) {
-      _loggedAccount = account.first;
-      _accountForm = loggedAccount;
-      notifyListeners();
-    } else {
-      throw Exception("Username or password is wrong");
+    _isLoading = true;
+    notifyListeners();
+    // using auth service to login
+    try {
+      final account = await _authService.signIn(username, password);
+      loadUserProfile(account.user?.id ?? '');
+    } catch (e) {
+      print(e);
+      rethrow;
     }
+    _isLoading = false;
+    notifyListeners();
   }
 
   Future<void> register(
       {required String username,
       required String password,
       required String name}) async {
-    final box = Hive.box<Account>('account');
-    final account = box.values.where((element) => element.email == username);
-
-    if (account.isNotEmpty) {
-      throw Exception("Username already exist");
-    } else {
-      final newAccount = Account(
-        uid: 1213,
-        email: username,
-        password: password,
-        name: name,
-        address: '',
-        phone: '',
-        photo: '',
-      );
-      final newUID = await box.add(newAccount);
-      box.put(newUID, newAccount.copyWith(uid: newUID));
-      // _loggedAccount = newAccount.copyWith(uid: newUID);
-      notifyListeners();
+    _isLoading = true;
+    notifyListeners();
+    // using auth service to register new account
+    try {
+      await _authService.signUp(username, password, name);
+    } catch (e) {
+      print(e);
+      rethrow;
     }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future updateProfilePicture(String path) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      final url = await _authService.updateProfilePicture(path, userProfile);
+      _userProfile?.photoProfile = url;
+      await _authService.updateProfile(_userProfile!);
+    } catch (e) {
+      print("authvm: $e");
+      rethrow;
+    }
+    _isLoading = false;
+    notifyListeners();
+  }
+
+  Future saveProfile(
+      {required String name,
+      required String phone,
+      required String address}) async {
+    _isLoading = true;
+    notifyListeners();
+    try {
+      _userProfile?.username = name;
+      _userProfile?.address = address;
+      _userProfile?.phone = phone;
+
+      await _authService.updateProfile(_userProfile!);
+    } catch (e) {
+      print("authvm: $e");
+      rethrow;
+    }
+    _isLoading = false;
+    notifyListeners();
   }
 }

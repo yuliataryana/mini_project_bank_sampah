@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mini_project_bank_sampah/common/utils.dart';
+import 'package:mini_project_bank_sampah/viewmodel/auth_viewmodel.dart';
+import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../widget/balance_info_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -7,11 +11,14 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: hexToColor('#F0F6DC'),
       appBar: AppBar(
         elevation: 0,
         leading: const Icon(Icons.group),
-        title: const Text("Nasabah"),
+        title: Builder(builder: (context) {
+          final profile = context.watch<AuthViewmodel>().userProfile;
+          if (profile?.role == "admin") return const Text("Petugas");
+          return const Text("Nasabah");
+        }),
         centerTitle: false,
       ),
       body: ListView(
@@ -22,98 +29,85 @@ class HomePage extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 //card for account short info
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Card(
-                    color: hexToColor("#F0F6DC"),
-                    child: Container(
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Icon(Icons.account_balance_wallet),
-                                  Text(
-                                    "Saldo Anda",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .headline6
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "Rp. 100.000",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  const SizedBox(
-                                    height: 30,
-                                  ),
-                                  Text(
-                                    "Yulia Taryana",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .titleMedium
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                  Text(
-                                    "BSS-0001011-PJ05",
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .subtitle1
-                                        ?.copyWith(fontWeight: FontWeight.bold),
-                                  ),
-                                ]),
-                            Row(
-                              children: [
-                                Image.asset(
-                                  "assets/logo_sahaja.png",
-                                  width: 36,
-                                ),
-                                Text(
-                                  "Bank Sampah\nSahaja".toUpperCase(),
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .caption
-                                      ?.copyWith(
-                                        color: Theme.of(context).primaryColor,
-                                      ),
-                                ),
-                              ],
-                            )
-                          ],
-                        )),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
-                  child: Row(
-                      children: [
-                    {
-                      "image": "tabung_sampah.png",
-                      "title": "Tabung Sampah",
-                      "onClick": () {
-                        Navigator.of(context).pushNamed('/trash_bank');
-                      }
-                    },
-                    {
-                      "image": "harga_sampah.png",
-                      "title": "harga sampah",
-                      "onClick": () {
-                        Navigator.of(context).pushNamed("/price_list");
-                      }
-                    },
-                    {"image": "cari_sampah.png", 
-                    "title": "cek sampah"},
-                    {
-                      "image": "informasi.png",
-                      "title": "Informasi",
-                    }
-                  ]
+                Builder(builder: (context) {
+                  final profile = context.watch<AuthViewmodel>().userProfile;
+                  if (profile?.role == "admin") return const SizedBox();
+                  return Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.of(context).pushNamed("/profile/balance");
+                      },
+                      child: const BalanceInfoCard(),
+                    ),
+                  );
+                }),
+                Builder(builder: (context) {
+                  final profile = context.watch<AuthViewmodel>().userProfile;
+                  final menus = profile?.role == "admin"
+                      ? [
+                          {
+                            "image": "tabung_sampah.png",
+                            "title": "Tabung Sampah",
+                            "onClick": () {
+                              Navigator.of(context).pushNamed(
+                                '/trash_bank',
+                                arguments: "admin",
+                              );
+                            }
+                          },
+                          {
+                            "image": "harga_sampah.png",
+                            "title": "harga sampah",
+                            "onClick": () {
+                              Navigator.of(context).pushNamed("/price_list");
+                            }
+                          },
+                          {
+                            "image": "nasabah.png",
+                            "title": "Data Nasabah",
+                            "onClick": () {
+                              Navigator.of(context)
+                                  .pushNamed("/admin/customers");
+                            }
+                          },
+                        ]
+                      : [
+                          {
+                            "image": "tabung_sampah.png",
+                            "title": "Tabung Sampah",
+                            "onClick": () {
+                              Navigator.of(context).pushNamed(
+                                '/trash_bank',
+                              );
+                            }
+                          },
+                          {
+                            "image": "harga_sampah.png",
+                            "title": "harga sampah",
+                            "onClick": () {
+                              Navigator.of(context).pushNamed("/price_list");
+                            }
+                          },
+                          {
+                            "image": "carts.png",
+                            "title": "Keranjang",
+                            "onClick": () {
+                              Navigator.of(context).pushNamed("/cart");
+                            }
+                          },
+                          {
+                            "image": "informasi.png",
+                            "title": "Informasi",
+                            "onClick": () {
+                              Navigator.of(context).pushNamed("/information");
+                            }
+                          }
+                        ];
+                  return Container(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+                    child: Row(
+                      children: menus
                           .map((e) => Expanded(
                                 child: AspectRatio(
                                   aspectRatio: 1,
@@ -126,41 +120,43 @@ class HomePage extends StatelessWidget {
                                       ),
                                       child: Padding(
                                         padding: const EdgeInsets.all(8),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Image.asset(
-                                                "assets/${e["image"]}",
-                                                width: 30,
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            const SizedBox(),
+                                            Image.asset(
+                                              "assets/${e["image"]}",
+                                              width: 36,
+                                            ),
+                                            Flexible(
+                                              child: Text(
+                                                e["title"].toString(),
+                                                style: Theme.of(context)
+                                                    .textTheme
+                                                    .caption
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: Colors.black,
+                                                    ),
+                                                textAlign: TextAlign.center,
                                               ),
-                                              //const Spacer(),
-                                              Flexible(
-                                                child: Text(
-                                                  e["title"].toString(),
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .caption
-                                                      ?.copyWith(
-                                                        fontWeight: FontWeight.bold,
-                                                        color: Colors.black,
-                                                      ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                              //const Spacer(),
-                                            ],
-                                          ),
-                                        
+                                            ),
+                                            const SizedBox(),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ))
-                          .toList()),
-                )
+                          .toList(),
+                    ),
+                  );
+                })
               ],
             ),
           ),
@@ -172,7 +168,7 @@ class HomePage extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      "Media",
+                      "Berita Terbaru",
                       style: Theme.of(context)
                           .textTheme
                           .headline5
@@ -180,76 +176,167 @@ class HomePage extends StatelessWidget {
                     ),
                   ],
                 ),
-                ...[
-                  {
-                    "title": "Article",
-                    "image": "artikel.png",
-                    "description":
-                        "Pengelolaan Bank Sampah Wujudkan Aksi Nyata Masyarakat Peduli Sampah"
-                  },
-                  {
-                    "title": "Galeri",
-                    "image": "galeri.png",
-                  }
-                ].map(
-                  (e) => Row(
-                    children: [
-                      Expanded(
-                        child: Card(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(
-                                height: 16,
-                              ),
-                              Row(
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: articles.length,
+                    itemBuilder: (ctx, index) {
+                      final article = articles[index];
+                      return InkWell(
+                        onTap: () async {
+                          // url launcer launch url
+                          try {
+                            final res = await launchUrl(
+                                Uri.dataFromString(article.link));
+                            debugPrint("$res ${article.link}");
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          }
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: 250,
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
                                 children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 16.0),
-                                    child: Text(
-                                      e["title"] ?? "",
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .headline5
-                                          ?.copyWith(
-                                              fontWeight: FontWeight.bold),
-                                    ),
+                                  Text(
+                                    article.title,
                                   ),
-                                ],
-                              ),
-                              Row(
-                                children: [
                                   Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 16),
-                                      child: Text(
-                                        e["description"] ?? "",
-                                        style:
-                                            Theme.of(context).textTheme.caption,
-                                      ),
+                                    child: Image.network(
+                                      article.imageUrl,
+                                      fit: BoxFit.cover,
                                     ),
                                   ),
                                 ],
                               ),
-                              // Row(
-                              //   children: [
-                              //     Expanded(
-                              // child:
-                              Image.asset(
-                                "assets/${e["image"]}",
-                                width: double.infinity,
-                              ),
-                              //     ),
-                              //   ],
-                              // )
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                      );
+                    },
                   ),
-                )
+                ),
+                Row(
+                  children: [
+                    Text(
+                      "Galleri",
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline5
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width,
+                  height: 200,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: galleries.length,
+                    itemBuilder: (ctx, index) {
+                      final article = galleries[index];
+                      return InkWell(
+                        onTap: () async {
+                          // url launcer launch url
+                          // try {
+                          //   final res = await launchUrl(
+                          //       Uri.dataFromString(article.link));
+                          //   debugPrint("$res ${article.link}");
+                          // } catch (e) {
+                          //   debugPrint(e.toString());
+                          // }
+                        },
+                        child: SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: 250,
+                          child: Card(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  // Text(
+                                  //   article.title,
+                                  // ),
+                                  Expanded(
+                                    child: Image.network(
+                                      article["image_url"].toString(),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                // SizedBox(
+                //   width: MediaQuery.of(context).size.width,
+                //   height: 100,
+                //   child: ListView.builder(
+                //     scrollDirection: Axis.horizontal,
+                //     itemCount: galleries.length,
+                //     itemBuilder: (ctx, index) {
+                //       final img = galleries[index];
+                //       return InkWell(
+                //         onTap: () {
+                //           // url launcer launch url
+                //           // try {
+                //           //   launchUrl(Uri.dataFromString(article.link));
+                //           // } catch (e) {
+                //           //   debugPrint(e.toString());
+                //           // }
+                //         },
+                //         child: Card(
+                //           child: Column(
+                //             mainAxisSize: MainAxisSize.min,
+                //             children: [
+                //               // Row(
+                //               //   children: [
+                //               //     Expanded(
+                //               //       child: Padding(
+                //               //         padding: const EdgeInsets.only(left: 16.0),
+                //               //         child: Text(
+                //               //           article.title,
+                //               //           style: Theme.of(context)
+                //               //               .textTheme
+                //               //               .titleLarge
+                //               //               ?.copyWith(
+                //               //                 fontWeight: FontWeight.bold,
+                //               //               ),
+                //               //         ),
+                //               //       ),
+                //               //     ),
+                //               //   ],
+                //               // ),
+
+                //               // Row(
+                //               //   children: [
+                //               //     Expanded(
+                //               // child:
+                //               Image.network(
+                //                 img["image_url"].toString(),
+                //                 width: double.infinity,
+                //               ),
+                //               //     ),
+                //               //   ],
+                //               // )
+                //             ],
+                //           ),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // ),
               ],
             ),
           )

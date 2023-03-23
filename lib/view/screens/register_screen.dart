@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:mini_project_bank_sampah/common/overlay_manager.dart';
 import 'package:mini_project_bank_sampah/viewmodel/auth_viewmodel.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../common/utils.dart';
 
@@ -24,6 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController = TextEditingController();
     _usernameController = TextEditingController();
     _nameController = TextEditingController();
+
     super.initState();
   }
 
@@ -32,6 +37,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _usernameController.dispose();
     _nameController.dispose();
+
     super.dispose();
   }
 
@@ -139,21 +145,32 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     Expanded(
                       flex: 4,
                       child: TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           try {
-                            context.read<AuthViewmodel>().register(
-                                  username: _usernameController.text.trim(),
-                                  password: _passwordController.text.trim(),
-                                  name: _nameController.text.trim(),
+                            OverlayManager().showOverlay(
+                              context,
+                              Container(
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            );
+                            await context.read<AuthViewmodel>().register(
+                                  username: _usernameController.text,
+                                  password: _passwordController.text,
+                                  name: _nameController.text,
                                 );
+                            OverlayManager().hideOverlay();
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  "Register Berhasil, silahkan beralih ke halaman login",
+                                  "Register Berhasil, silahkan konfirmasi email dan beralih ke halaman login",
                                 ),
                               ),
                             );
                           } on Exception catch (e) {
+                            OverlayManager().hideOverlay();
+
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
