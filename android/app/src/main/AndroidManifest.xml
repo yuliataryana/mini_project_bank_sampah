@@ -8,7 +8,7 @@
             </intent>
         </queries>
    <application
-        android:label="mini_project_bank_sampah"
+        android:label="Bank Sampah SAHAJA"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
