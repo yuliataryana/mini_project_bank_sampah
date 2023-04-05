@@ -23,6 +23,8 @@ class MainViewmodel extends ChangeNotifier {
   List<CartItem> _carts = [];
   List<CartItem> get carts => _carts;
 
+  bool isAdmin = false;
+
   Future<void> saveCartToHivedb() async {
     final json = _carts.map((e) => e.toJson()).toList();
     final jsonString = await compute(jsonEncode, json);
@@ -149,10 +151,16 @@ class MainViewmodel extends ChangeNotifier {
   }
 
   List<Transaction> _transactions = [];
-  List<Transaction> get transactions => _transactions;
+  List<Transaction> get transactions => isAdmin
+      ? _transactions
+          .where((element) => element.status == TransactionStatus.pending)
+          .toList()
+      : _transactions;
 
   int get balance {
-    final trxs = _transactions.map((element) {
+    final trxs = _transactions
+        .where((element) => element.status != TransactionStatus.pending)
+        .map((element) {
       if (element.transactionType == TransactionType.income) {
         return element.subtotal;
       } else {
@@ -161,16 +169,18 @@ class MainViewmodel extends ChangeNotifier {
     }).toList();
     print(trxs.toString());
     print(trxs.length);
-    return _transactions.isEmpty
-        ? 0
-        : trxs.reduce((value, element) => value + element);
+    return trxs.isEmpty ? 0 : trxs.reduce((value, element) => value + element);
   }
 
-  void fetchTransactions(String userId) async {
+  void fetchTransactions(
+    String userId,
+  ) async {
     if (_transactions.isNotEmpty) {
       return;
     }
-    _transactions = await TransactionService().getTransactions(userId);
+
+    _transactions =
+        await TransactionService().getTransactions(userId, isAdmin: isAdmin);
     notifyListeners();
   }
 
@@ -192,6 +202,7 @@ class MainViewmodel extends ChangeNotifier {
           .toList();
       final newTransaction = Transaction(
         userid: "",
+        status: TransactionStatus.pending,
         subtotal: totalPrice.toInt(),
         transactionType: TransactionType.income,
         detailTransaction: transactionDetails,
@@ -199,8 +210,9 @@ class MainViewmodel extends ChangeNotifier {
       await TransactionService().addTransaction(newTransaction);
       _carts = [];
       await saveCartToHivedb();
-      _transactions = await TransactionService()
-          .getTransactions(Supabase.instance.client.auth.currentUser!.id);
+      _transactions = await TransactionService().getTransactions(
+          Supabase.instance.client.auth.currentUser!.id,
+          isAdmin: isAdmin);
       print("fetch transaction");
     } catch (e) {
       print(e);
@@ -217,7 +229,8 @@ class MainViewmodel extends ChangeNotifier {
     if (_bankAccounts.isNotEmpty) {
       return;
     }
-    _bankAccounts = await TransactionService().getBankAccounts();
+    _bankAccounts =
+        await TransactionService().getBankAccounts(isAdmin: isAdmin);
     notifyListeners();
   }
 
@@ -258,6 +271,7 @@ class MainViewmodel extends ChangeNotifier {
       ];
       final newTransaction = Transaction(
         userid: "",
+        status: TransactionStatus.success,
         subtotal: amount,
         transactionType: TransactionType.outcome,
         detailTransaction: transactionDetails,
@@ -265,8 +279,9 @@ class MainViewmodel extends ChangeNotifier {
       await TransactionService().addTransaction(newTransaction);
       _carts = [];
       await saveCartToHivedb();
-      _transactions = await TransactionService()
-          .getTransactions(Supabase.instance.client.auth.currentUser!.id);
+      _transactions = await TransactionService().getTransactions(
+          Supabase.instance.client.auth.currentUser!.id,
+          isAdmin: isAdmin);
       print("fetch transaction");
     } catch (e) {
       print(e);
@@ -341,6 +356,7 @@ class MainViewmodel extends ChangeNotifier {
       }
 
       final newTransaction = Transaction(
+        status: TransactionStatus.success,
         userid: "",
         subtotal: request.amount,
         transactionType: TransactionType.outcome,
@@ -349,8 +365,29 @@ class MainViewmodel extends ChangeNotifier {
       await TransactionService().addTransaction(newTransaction);
       _carts = [];
       await saveCartToHivedb();
-      _transactions = await TransactionService()
-          .getTransactions(Supabase.instance.client.auth.currentUser!.id);
+      _transactions = await TransactionService().getTransactions(
+          Supabase.instance.client.auth.currentUser!.id,
+          isAdmin: isAdmin);
+      print("fetch transaction");
+    } catch (e) {
+      print(e);
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  void updateTransaction(int? idTransaction, TransactionStatus status) async {
+    if (_isLoading) {
+      return;
+    }
+    try {
+      _isLoading = true;
+      notifyListeners();
+      await TransactionService().updateTransaction(idTransaction, status);
+      _transactions = await TransactionService().getTransactions(
+          Supabase.instance.client.auth.currentUser!.id,
+          isAdmin: isAdmin);
       print("fetch transaction");
     } catch (e) {
       print(e);

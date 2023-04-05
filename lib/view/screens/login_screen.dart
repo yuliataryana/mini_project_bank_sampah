@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                  e.toString().replaceAll("Exception:", ""),
+                                 "Login Gagal, Silahkan isi Email dan Password dengan benar",
                                 ),
                               ),
                             );

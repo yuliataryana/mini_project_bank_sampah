@@ -6,6 +6,7 @@ import 'package:mini_project_bank_sampah/model/detail_transaction.dart';
 import 'package:provider/provider.dart';
 
 import '../../../model/transaction.dart';
+import '../../../viewmodel/auth_viewmodel.dart';
 import '../../../viewmodel/main_viewmodel.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
@@ -18,7 +19,8 @@ class TransactionDetailScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wasteCategories = context.watch<MainViewmodel>().itemsType;
-
+    final profile = context.watch<AuthViewmodel>().userProfile;
+    // if (profile?.role == "admin")
     return Scaffold(
       appBar: AppBar(
         title: const Text('Detail Transaksi'),
@@ -30,7 +32,7 @@ class TransactionDetailScreen extends StatelessWidget {
             children: [
               // status transaksi
               Text(
-                "Status Transaksi : Berhasil",
+                "Status Transaksi : ${transaction.status.name}",
                 style: Theme.of(context).textTheme.titleLarge,
               ),
             ],
@@ -131,6 +133,48 @@ class TransactionDetailScreen extends StatelessWidget {
                         ],
                       ),
                     ),
+                    if (profile?.role == "admin")
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  context
+                                      .read<MainViewmodel>()
+                                      .updateTransaction(
+                                        transaction.idTransaction,
+                                        TransactionStatus.success,
+                                      );
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Konfirmasi"),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
+                                ),
+                                onPressed: () {
+                                  context
+                                      .read<MainViewmodel>()
+                                      .updateTransaction(
+                                        transaction.idTransaction,
+                                        TransactionStatus.failed,
+                                      );
+                                  Navigator.pop(context);
+                                },
+                                child: const Text("Tolak"),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                   ],
                 ),
               ),

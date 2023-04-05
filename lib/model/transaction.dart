@@ -12,11 +12,42 @@ import 'package:mini_project_bank_sampah/model/detail_transaction.dart';
 
 enum TransactionType { income, outcome }
 
+enum TransactionStatus { pending, success, failed }
+
+extension TransactionStatusExt on TransactionStatus {
+  String get name {
+    switch (this) {
+      case TransactionStatus.pending:
+        return "pending";
+      case TransactionStatus.success:
+        return "success";
+      case TransactionStatus.failed:
+        return "failed";
+      default:
+        return "pending";
+    }
+  }
+
+  TransactionStatus fromString(String name) {
+    switch (name) {
+      case "pending":
+        return TransactionStatus.pending;
+      case "success":
+        return TransactionStatus.success;
+      case "failed":
+        return TransactionStatus.failed;
+      default:
+        return TransactionStatus.pending;
+    }
+  }
+}
+
 class Transaction {
   Transaction({
     this.idTransaction,
     this.createdAt,
     required this.userid,
+    required this.status,
     required this.subtotal,
     required this.transactionType,
     required this.detailTransaction,
@@ -26,11 +57,13 @@ class Transaction {
   DateTime? createdAt;
   String userid;
   int subtotal;
+  TransactionStatus status;
   TransactionType transactionType;
   List<DetailTransaction> detailTransaction;
 
   factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
         idTransaction: json["id_transaction"],
+        status: TransactionStatus.pending.fromString(json["status"]),
         detailTransaction: [],
         createdAt: DateTime.parse(json["created_at"]),
         userid: json["userid"],
@@ -45,6 +78,7 @@ class Transaction {
         "created_at": createdAt?.toIso8601String(),
         "userid": userid,
         "subtotal": subtotal,
+        "status": status.name,
         "transaction_type":
             transactionType == TransactionType.income ? "income" : "outcome",
       };

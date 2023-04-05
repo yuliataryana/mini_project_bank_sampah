@@ -64,37 +64,37 @@ class _WidthDrawScreenState extends State<WidthDrawScreen> {
           const Divider(
             thickness: 2,
           ),
-          ListTile(
-            title: Text("Bank Transfer"),
-            trailing: Icon(Icons.chevron_right_outlined),
-            onTap: () {
-              if (_controller.text.isEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Jumlah saldo tidak boleh kosong"),
-                  ),
-                );
+          // ListTile(
+          //   title: Text("Bank Transfer"),
+          //   trailing: Icon(Icons.chevron_right_outlined),
+          //   onTap: () {
+          //     if (_controller.text.isEmpty) {
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //         const SnackBar(
+          //           content: Text("Jumlah saldo tidak boleh kosong"),
+          //         ),
+          //       );
 
-                return;
-              }
-              final amount = int.tryParse(_controller.text) ?? 0;
-              // minimum withdraw is 50k
-              if (amount < 50000) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text("Jumlah saldo minimal 50.000"),
-                  ),
-                );
+          //       return;
+          //     }
+          //     final amount = int.tryParse(_controller.text) ?? 0;
+          //     // minimum withdraw is 50k
+          //     if (amount < 50000) {
+          //       ScaffoldMessenger.of(context).showSnackBar(
+          //         const SnackBar(
+          //           content: Text("Jumlah saldo minimal 50.000"),
+          //         ),
+          //       );
 
-                return;
-              }
-              Navigator.of(context)
-                  .pushNamed("/widthdraw/bank-transfer", arguments: amount);
-            },
-          ),
-          const Divider(
-            thickness: 2,
-          ),
+          //       return;
+          //     }
+          //     Navigator.of(context)
+          //         .pushNamed("/widthdraw/bank-transfer", arguments: amount);
+          //   },
+          // ),
+          // const Divider(
+          //   thickness: 2,
+          // ),
         ],
       ),
     );

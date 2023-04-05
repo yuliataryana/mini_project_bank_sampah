@@ -16,7 +16,7 @@ class TabunganSampahScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: hexToColor('#F0F6DC'),
       appBar: AppBar(
-        title: const Text('Harga Sampah'),
+        title: const Text('Tabung Sampah'),
       ),
       body: Column(
         children: <Widget>[

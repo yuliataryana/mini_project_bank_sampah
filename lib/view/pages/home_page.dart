@@ -58,7 +58,7 @@ class HomePage extends StatelessWidget {
                           },
                           {
                             "image": "harga_sampah.png",
-                            "title": "harga sampah",
+                            "title": "Harga Sampah",
                             "onClick": () {
                               Navigator.of(context).pushNamed("/price_list");
                             }
@@ -84,7 +84,7 @@ class HomePage extends StatelessWidget {
                           },
                           {
                             "image": "harga_sampah.png",
-                            "title": "harga sampah",
+                            "title": "Harga Sampah",
                             "onClick": () {
                               Navigator.of(context).pushNamed("/price_list");
                             }
@@ -168,7 +168,7 @@ class HomePage extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      "Berita Terbaru",
+                      "Artikel Berita",
                       style: Theme.of(context)
                           .textTheme
                           .headline5
@@ -189,7 +189,7 @@ class HomePage extends StatelessWidget {
                         onTap: () async {
                           // url launcer launch url
                           try {
-                            final res = await launchUrl (
+                            final res = await launchUrl(
                                 Uri.parse(article.link),
                                 mode: LaunchMode.externalApplication);
                             debugPrint("$res ${article.link}");

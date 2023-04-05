@@ -28,6 +28,7 @@ class CartScreen extends StatelessWidget {
         body: Builder(
           builder: (context) {
             final cart = context.watch<MainViewmodel>().carts;
+
             // return Text(cart.toString());
             return ListView.builder(
               itemCount: cart.length + 1,

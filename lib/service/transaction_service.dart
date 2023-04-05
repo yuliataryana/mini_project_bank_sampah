@@ -12,11 +12,14 @@ class TransactionService extends BaseService {
   @override
   String get path => "transaction";
 
-  Future<List<Transaction>> getTransactions(String userId) async {
+  Future<List<Transaction>> getTransactions(String userId,
+      {required bool isAdmin}) async {
     try {
       // final response = await supabaseClient.from(path).select();
       final responses = await Future.wait([
-        supabaseClient.from(path).select().eq("userid", userId),
+        isAdmin
+            ? supabaseClient.from(path).select()
+            : supabaseClient.from(path).select().eq("userid", userId),
         supabaseClient.from('detail_income_transaction').select(),
         supabaseClient.from('detail_outcome_transaction').select(),
       ]);
@@ -102,8 +105,12 @@ class TransactionService extends BaseService {
     }
   }
 
-  Future<List<BankAccount>> getBankAccounts() async {
+  Future<List<BankAccount>> getBankAccounts({bool isAdmin = false}) async {
     try {
+      if (isAdmin) {
+        final response = await supabaseClient.from('bank_account').select();
+        return (response as List).map((e) => BankAccount.fromJson(e)).toList();
+      }
       final response = await supabaseClient
           .from('bank_account')
           .select()
@@ -125,6 +132,20 @@ class TransactionService extends BaseService {
           "userid": supabaseClient.auth.currentUser!.id
         }
       ]).select();
+      return response;
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> updateTransaction(
+      int? idTransaction, TransactionStatus status) async {
+    try {
+      final response = await supabaseClient.from(path).update(
+        {
+          "status": status.name,
+        },
+      ).eq("id_transaction", idTransaction);
       return response;
     } catch (e) {
       print(e);

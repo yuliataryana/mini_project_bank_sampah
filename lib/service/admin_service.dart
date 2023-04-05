@@ -30,7 +30,8 @@ class AdminService extends BaseService {
       final profile = await AuthService().getProfile(userid);
       print("profile: $profile");
       print("get transaction by id: $userid");
-      final transaction = await TransactionService().getTransactions(userid);
+      final transaction =
+          await TransactionService().getTransactions(userid, isAdmin: false);
       return DetailNasabah(
         user: userRes.user!,
         userProfile: profile,

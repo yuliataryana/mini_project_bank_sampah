@@ -142,6 +142,7 @@ class DetailCustomer extends StatelessWidget {
                 user.transaction.isEmpty
                     ? Text("Belum ada Riwayat Transaksi")
                     : ListView.builder(
+                        reverse: true,
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         itemCount: user.transaction.length,

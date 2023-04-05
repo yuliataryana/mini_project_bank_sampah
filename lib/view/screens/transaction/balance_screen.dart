@@ -60,6 +60,7 @@ class BalanceScreen extends StatelessWidget {
           Builder(builder: (context) {
             final transactions = context.watch<MainViewmodel>().transactions;
             return ListView.builder(
+              reverse: true,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: transactions.length,

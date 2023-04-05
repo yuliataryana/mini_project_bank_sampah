@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:mini_project_bank_sampah/model/account.dart';
@@ -21,8 +23,10 @@ class AuthViewmodel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void loadUserProfile(String userid) async {
+  void loadUserProfile(String userid,
+      {Function(UserProfile?)? callback}) async {
     _userProfile = await _authService.getProfile(userid);
+    callback?.call(_userProfile);
     notifyListeners();
   }
 

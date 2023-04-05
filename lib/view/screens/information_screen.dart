@@ -16,20 +16,6 @@ class _InformationScreenState extends State<InformationScreen> {
   }
 
   final faqs = [
-    // {
-    //   "title": "Bagaimana jika lupa kata sandi ?",
-    //   "body":
-    //       """
-    //   Untuk reset kata sandi, terdapat pada saat masuk aplikasi.
-    //     1.Klik Lupa Password
-    //     2.Isi alamat email anda
-    //     3.Klik Reset Password
-    //     4.Email akan dikirimkan kepada anda, cek email secara berkala
-    //     5.Klik link untuk mengubah kata sandi
-    //     6.Masukkan kata sandi baru
-    //     7.Akun dapat digunakan kembali.
-    //   """,
-    // },
     {
       "title": "Tidak bisa tarik saldo, apa yang harus saya lakukan?",
       "body":
@@ -44,14 +30,13 @@ Tarik saldo hanya bisa dilakukan jika sudah melakukan verifikasi akun di menu Pr
 Berikut adalah cara untuk mencairkan tabungan sampah :
   1.Klik tombol Tarik Saldo pada menu Saldo Anda
   2.Masukkan nominal saldo yang akan ditarik
-  3.Pilih “Metode Penarikan”  *(Cash dan Transfer)
+  3.Pilih “Metode Penarikan”  *(Cash)
   4. Lalu klik “Lakukan Penarikan”
 *untuk metode cash, dana yang dicairkan akan dititipkan ke petugas saat jadwal penimbangan bank sampah
-*untuk metode transfer, umumnya membutuhkan waktu 1x24 jam sampai dana masuk ke rekening nasabah
       """
     },
     {
-      "title": "Bagaimana cara menambahkan saldo?",
+      "title": "Bagaimana cara menimbang sampah?",
       "body":
           """
 Semua proses penimbangan dilakukan oleh petugas saat jadwal penimbangan bank sampah

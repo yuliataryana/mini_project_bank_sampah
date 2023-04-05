@@ -16,13 +16,15 @@ class HistoryPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final transactionHistory = context.watch<MainViewmodel>().transactions;
     final wasteCategories = context.watch<MainViewmodel>().itemsType;
     final profile = context.watch<AuthViewmodel>().userProfile;
+    final transactionHistory = context.watch<MainViewmodel>().transactions;
     final bankAccounts = context.watch<MainViewmodel>().bankAccounts;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Riwayat'),
+        title: profile?.role != "admin"
+            ? const Text('Riwayat')
+            : const Text('Pending Transaction'),
         elevation: 0,
       ),
       body: ListView.builder(
@@ -72,20 +74,59 @@ class HistoryPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.greenAccent[100],
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Text(
-                                isIncome ? "Pemasukan" : "Pengeluaran",
-                                style: TextStyle(
-                                  color: Colors.green[600],
-                                  fontWeight: FontWeight.w200,
-                                  fontSize: 8,
-                                ),
-                              ),
+                            Builder(
+                              builder: (context) {
+                                switch (transaction.status) {
+                                  case TransactionStatus.pending:
+                                    return Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.yellow[100],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        "Pending",
+                                        style: TextStyle(
+                                          color: Colors.yellow[600],
+                                          fontWeight: FontWeight.w200,
+                                          fontSize: 8,
+                                        ),
+                                      ),
+                                    );
+                                  case TransactionStatus.success:
+                                    return Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.greenAccent[100],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        "Success",
+                                        style: TextStyle(
+                                          color: Colors.green[600],
+                                          fontWeight: FontWeight.w200,
+                                          fontSize: 8,
+                                        ),
+                                      ),
+                                    );
+                                  case TransactionStatus.failed:
+                                    return Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.redAccent[100],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Text(
+                                        "Failed",
+                                        style: TextStyle(
+                                          color: Colors.red[600],
+                                          fontWeight: FontWeight.w200,
+                                          fontSize: 8,
+                                        ),
+                                      ),
+                                    );
+                                }
+                              },
                             )
                           ],
                         ),

@@ -36,12 +36,24 @@ class Routes {
         return MaterialPageRoute(builder: (context) {
           final userId = Supabase.instance.client.auth.currentSession?.user.id;
           if (userId != null) {
-            Future.microtask(() {
-              context.read<AuthViewmodel>().loadUserProfile(userId);
-              context.read<MainViewmodel>().fetchTransactions(userId);
-              context.read<MainViewmodel>().fetchBankAccounts();
-              context.read<MainViewmodel>().fetchWasteCategories();
-            });
+            Future.microtask(
+              () {
+                context.read<AuthViewmodel>().loadUserProfile(
+                  userId,
+                  callback: (profile) {
+                    context.read<MainViewmodel>().isAdmin =
+                        (profile?.role == "admin");
+                    Future.microtask(
+                      () {
+                        context.read<MainViewmodel>().fetchTransactions(userId);
+                        context.read<MainViewmodel>().fetchBankAccounts();
+                        context.read<MainViewmodel>().fetchWasteCategories();
+                      },
+                    );
+                  },
+                );
+              },
+            );
           }
           return const HomeScreen();
         });
