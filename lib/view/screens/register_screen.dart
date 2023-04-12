@@ -174,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text(
-                                 "Register Gagal, Silahkan lengkapi data dengan benar",
+                                  "Register Gagal, Silahkan lengkapi data dengan benar",
                                 ),
                               ),
                             );

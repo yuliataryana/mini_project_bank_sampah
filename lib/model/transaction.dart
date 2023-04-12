@@ -9,6 +9,7 @@
 // ]
 
 import 'package:mini_project_bank_sampah/model/detail_transaction.dart';
+import 'package:mini_project_bank_sampah/model/user_profile.dart';
 
 enum TransactionType { income, outcome }
 
@@ -60,6 +61,7 @@ class Transaction {
   TransactionStatus status;
   TransactionType transactionType;
   List<DetailTransaction> detailTransaction;
+  UserProfile? userProfile;
 
   factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
         idTransaction: json["id_transaction"],

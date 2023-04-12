@@ -16,11 +16,12 @@ class _InformationScreenState extends State<InformationScreen> {
   }
 
   final faqs = [
+    
     {
-      "title": "Tidak bisa tarik saldo, apa yang harus saya lakukan?",
+      "title": "Tidak bisa Login setelah registrasi, apa yang harus saya lakukan?",
       "body":
           """
-Tarik saldo hanya bisa dilakukan jika sudah melakukan verifikasi akun di menu Profile.
+Login hanya bisa dilakukan jika sudah melakukan verifikasi email, cek email secara berkala.
     """
     },
     {
@@ -31,7 +32,7 @@ Berikut adalah cara untuk mencairkan tabungan sampah :
   1.Klik tombol Tarik Saldo pada menu Saldo Anda
   2.Masukkan nominal saldo yang akan ditarik
   3.Pilih “Metode Penarikan”  *(Cash)
-  4. Lalu klik “Lakukan Penarikan”
+  4. Lalu penarikan dilakukan
 *untuk metode cash, dana yang dicairkan akan dititipkan ke petugas saat jadwal penimbangan bank sampah
       """
     },

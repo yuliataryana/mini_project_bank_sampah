@@ -60,7 +60,25 @@ class MainViewmodel extends ChangeNotifier {
   }
 
   List<WasteCategory> _itemsType = [];
-  List<WasteCategory> get itemsType => _itemsType;
+  String _filter = '';
+  set filter(String value) {
+    _filter = value;
+    notifyListeners();
+  }
+
+  void resetFilter() {
+    _filter = '';
+    Future.delayed(Duration(milliseconds: 100), () {
+      notifyListeners();
+    });
+  }
+
+  List<WasteCategory> get itemsType => _filter.isEmpty
+      ? _itemsType
+      : _itemsType
+          .where((element) =>
+              element.wasteName.toLowerCase().contains(_filter.toLowerCase()))
+          .toList();
 
   void fetchWasteCategories() async {
     // if (_itemsType.isNotEmpty) {

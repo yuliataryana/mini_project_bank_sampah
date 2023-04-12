@@ -35,6 +35,7 @@ class Routes {
       case '/':
         return MaterialPageRoute(builder: (context) {
           final userId = Supabase.instance.client.auth.currentSession?.user.id;
+          context.read<MainViewmodel>().resetFilter();
           if (userId != null) {
             Future.microtask(
               () {

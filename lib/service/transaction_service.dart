@@ -2,6 +2,7 @@ import 'package:mini_project_bank_sampah/model/bank_account.dart';
 
 import '../model/detail_transaction.dart';
 import '../model/transaction.dart';
+import '../model/user_profile.dart';
 import 'base_service.dart';
 
 class TransactionService extends BaseService {
@@ -22,6 +23,8 @@ class TransactionService extends BaseService {
             : supabaseClient.from(path).select().eq("userid", userId),
         supabaseClient.from('detail_income_transaction').select(),
         supabaseClient.from('detail_outcome_transaction').select(),
+        // get profile
+        supabaseClient.from('user_profile').select(),
       ]);
 
       print(responses);
@@ -42,6 +45,14 @@ class TransactionService extends BaseService {
           .toList();
       // print(detailIncomeTransactions);
       return transactions.map((e) {
+        //set user profile
+        final userProfile = (responses[3] as List)
+            .where((element) => element["userid"] == e.userid)
+            .toList();
+        if (userProfile.isNotEmpty) {
+          e.userProfile = UserProfile.fromJson(userProfile[0]);
+        }
+
         if (e.transactionType == TransactionType.income) {
           e.detailTransaction = detailIncomeTransactions
               .where((element) => element.idTransaction == e.idTransaction)

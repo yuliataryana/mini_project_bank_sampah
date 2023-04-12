@@ -13,13 +13,12 @@ class TransactionDetailScreen extends StatelessWidget {
   const TransactionDetailScreen({super.key, required this.transaction});
   final Transaction transaction;
 
-  List<DetailIncomeTransaction> get detailIncomeTransaction =>
-      transaction.detailTransaction.cast<DetailIncomeTransaction>();
-
   @override
   Widget build(BuildContext context) {
     final wasteCategories = context.watch<MainViewmodel>().itemsType;
     final profile = context.watch<AuthViewmodel>().userProfile;
+    final bankAccounts = context.watch<MainViewmodel>().bankAccounts;
+
     // if (profile?.role == "admin")
     return Scaffold(
       appBar: AppBar(
@@ -73,66 +72,143 @@ class TransactionDetailScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    for (var detail in detailIncomeTransaction)
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Row(
+                    Builder(builder: (ctx) {
+                      final isOutcome = transaction.transactionType ==
+                          TransactionType.outcome;
+                      if (isOutcome) {
+                        final List<DetailOutcomeTransaction> detailTransaction =
+                            transaction.detailTransaction
+                                .cast<DetailOutcomeTransaction>();
+                        Map<String, dynamic> map = {};
+                        if (detailTransaction.isNotEmpty) {
+                          map = detailTransaction.first.method;
+
+                          if (map["idBankAccount"] != null) {
+                            final bankAccount = bankAccounts.firstWhere(
+                              (element) =>
+                                  element.idBankAccount == map["idBankAccount"],
+                            );
+                            map["bankName"] = bankAccount.bankName;
+                            map["accountNumber"] = bankAccount.accountNumber;
+                            map["accountHolder"] = bankAccount.accountHolder;
+                          }
+                        }
+
+                        print(detailTransaction);
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
                               children: [
-                                Image.network(
-                                  wasteCategories
-                                      .firstWhere((element) =>
-                                          element.idWaste == detail.idWaste)
-                                      .imageUrl,
-                                  width: 80,
+                                Text(
+                                    "Nasabah : ${transaction.userProfile?.username}"),
+                              ],
+                            ),
+                            // jumlah penarikan
+                            Row(
+                              children: [
+                                Text(
+                                  "Jumlah Penarikan : Rp. ${transaction.subtotal.toInt()}",
                                 ),
-                                const SizedBox(
-                                  width: 16,
-                                ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                              ],
+                            ),
+                            // metode penarikan
+
+                            Row(
+                              children: [
+                                Text("Metode Penarikan : ${map["method"]}"),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                const Text("Rekening Bank : "),
+                                map["method"] == "bank"
+                                    ? Text(
+                                        "${map["bankName"]} (${map["accountNumber"]})")
+                                    : const Text("-")
+                              ],
+                            ),
+                          ],
+                        );
+                      } else {
+                        final List<DetailIncomeTransaction>
+                            detailIncomeTransaction = transaction
+                                .detailTransaction
+                                .cast<DetailIncomeTransaction>();
+
+                        return Column(children: [
+                          for (var detail in detailIncomeTransaction)
+                            Column(
+                              children: [
+                                Row(
                                   children: [
                                     Text(
-                                      wasteCategories
-                                          .firstWhere((element) =>
-                                              element.idWaste == detail.idWaste)
-                                          .wasteName,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
+                                        "  Nasabah : ${transaction.userProfile?.username}"),
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Row(
+                                    children: [
+                                      Image.network(
+                                        wasteCategories
+                                            .firstWhere((element) =>
+                                                element.idWaste ==
+                                                detail.idWaste)
+                                            .imageUrl,
+                                        width: 80,
                                       ),
-                                    ),
-                                    Text("${detail.qty} Kg"),
+                                      const SizedBox(
+                                        width: 16,
+                                      ),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            wasteCategories
+                                                .firstWhere((element) =>
+                                                    element.idWaste ==
+                                                    detail.idWaste)
+                                                .wasteName,
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          Text("${detail.qty} Kg"),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                const Divider(
+                                  thickness: 2,
+                                ),
+                              ],
+                            ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                        "Total Menabung(${detailIncomeTransaction.length} barang)"),
+                                  ],
+                                ),
+                                Row(
+                                  children: [
+                                    Text("Rp. ${transaction.subtotal.toInt()}"
+                                        // "Rp. ${(detailTransaction.first.qty * detailFirstItem.wastePrice.toInt())}",
+                                        ),
                                   ],
                                 ),
                               ],
                             ),
-                          ),
-                          const Divider(
-                            thickness: 2,
-                          ),
-                        ],
-                      ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Text(
-                                  "Total Menabung(${detailIncomeTransaction.length} barang)"),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Text("Rp. ${transaction.subtotal.toInt()}"
-                                  // "Rp. ${(detailTransaction.first.qty * detailFirstItem.wastePrice.toInt())}",
-                                  ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                          )
+                        ]);
+                      }
+                    }),
                     if (profile?.role == "admin")
                       Row(
                         children: [

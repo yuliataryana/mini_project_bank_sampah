@@ -22,7 +22,10 @@ class HargaSampahScreen extends StatelessWidget {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(25),
               ),
-              child: const TextField(
+              child: TextField(
+                onChanged: (value) {
+                  context.read<MainViewmodel>().filter = (value);
+                },
                 decoration: InputDecoration(
                   hintText: 'Cari jenis sampah',
                   prefixIcon: Icon(Icons.search),

@@ -40,13 +40,11 @@ class HistoryPage extends StatelessWidget {
                 padding: const EdgeInsets.all(8.0),
                 child: InkWell(
                   onTap: () {
-                    if (isIncome) {
-                      Navigator.pushNamed(
-                        context,
-                        "/transaction-detail",
-                        arguments: transaction,
-                      );
-                    }
+                    Navigator.pushNamed(
+                      context,
+                      "/transaction-detail",
+                      arguments: transaction,
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.all(16),
