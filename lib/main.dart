@@ -13,13 +13,9 @@ import 'package:mini_project_bank_sampah/supabase_config.dart';
 import 'package:mini_project_bank_sampah/viewmodel/auth_viewmodel.dart';
 import 'package:mini_project_bank_sampah/viewmodel/main_viewmodel.dart';
 
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
   await Supabase.initialize(
     url: SupabaseConfig.url,
     anonKey: SupabaseConfig.key,
