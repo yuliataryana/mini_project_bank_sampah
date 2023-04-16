@@ -6,8 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:mini_project_bank_sampah/common/utils.dart';
-import 'package:mini_project_bank_sampah/model/account.dart';
-import 'package:mini_project_bank_sampah/model/local_session.dart';
 import 'package:mini_project_bank_sampah/routes.dart';
 import 'package:mini_project_bank_sampah/supabase_config.dart';
 import 'package:mini_project_bank_sampah/viewmodel/auth_viewmodel.dart';
@@ -21,11 +19,7 @@ void main() async {
     anonKey: SupabaseConfig.key,
   );
   await Hive.initFlutter();
-  Hive.registerAdapter(AccountAdapter());
-  Hive.registerAdapter(LocalSessionAdapter());
-  await Hive.openBox<Account>('account');
   await Hive.openBox<String>('cart');
-  await Hive.openBox<LocalSession>('session');
   runApp(const MyApp());
 }
 

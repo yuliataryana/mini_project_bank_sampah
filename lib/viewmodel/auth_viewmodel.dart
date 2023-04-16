@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:mini_project_bank_sampah/model/account.dart';
 import 'package:mini_project_bank_sampah/model/user_profile.dart';
 import 'package:mini_project_bank_sampah/service/auth_service.dart';
 import 'package:supabase/supabase.dart';
